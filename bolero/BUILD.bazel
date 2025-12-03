@@ -2,9 +2,11 @@ cc_library(
     name="lib",
     srcs=[
         "src/bolero/config.cpp",
+        "src/bolero/config/config_utils.cpp",
         ],
     hdrs=[
         "src/bolero/config.hpp",
+        "src/bolero/config/config_utils.hpp",
         ],
     includes = ["src"],
     deps=[

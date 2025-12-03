@@ -43,17 +43,18 @@ SortIncludes: true
 IncludeBlocks: Regroup
 
 IncludeCategories:
-  # 1) 시스템 헤더: <vector>, <string> 처럼 슬래시 없는 것
-  - Regex: '^<[^/]+>$'
+  - Regex: '^<[a-zA-Z0-9_]+>$'
     Priority: 1
-
-  # 2) 서드파티 헤더: 예) <nlohmann/json.hpp>, <boost/...> 등
-  - Regex: '^<*/.*>$'
+    SortPriority: 0
+  - Regex: '^<.+\.h>$'
     Priority: 2
-
-  # 3) 프로젝트/로컬 헤더: "xxx.hpp"
-  - Regex: '^".*"$'
+    SortPriority: 0
+  - Regex: '^<[^>]+/[^>]+>$'
     Priority: 3
+    SortPriority: 0
+  - Regex: '^".+"$'
+    Priority: 4
+    SortPriority: 0
 
 # ---- 기타 ----
 ReflowComments: true
