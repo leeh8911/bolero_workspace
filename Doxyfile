@@ -1,0 +1,59 @@
+# 프로젝트 이름
+PROJECT_NAME           = "Bolero"
+
+# 출력 위치
+OUTPUT_DIRECTORY       = docs_out
+
+# 문서 종류
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+
+# 소스 코드 재귀 탐색
+RECURSIVE              = YES
+
+# 문서화되지 않은 것까지 포함할지
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+# ---------------------------------
+# UML 스타일 클래스/관계 다이어그램 설정
+# ---------------------------------
+
+# Graphviz(dot) 사용 여부
+HAVE_DOT               = YES
+
+# 클래스 다이어그램 생성 (상속/구성 관계)
+CLASS_DIAGRAMS         = YES
+
+# 협업(콜라보레이션) 그래프 (멤버로 포함된 타입 관계)
+COLLABORATION_GRAPH    = YES
+
+# 전체 상속 계층 구조를 트리로 보여줄지
+GRAPHICAL_HIERARCHY    = YES
+
+# 디렉터리 구조 그래프
+DIRECTORY_GRAPH        = YES
+
+# UML 스타일로 그릴지 여부 (상자/화살표 형태)
+UML_LOOK               = YES
+
+# 너무 큰 그래프는 자르기 위한 노드 수 제한
+DOT_GRAPH_MAX_NODES    = 50
+
+# 그래프 이미지 포맷 (SVG 추천 – 확대/검색 편함)
+DOT_IMAGE_FORMAT       = svg
+
+# HTML에서 SVG를 인터랙티브하게
+INTERACTIVE_SVG        = YES
+
+# 함수 호출/호출자 그래프
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+
+# 템플릿 관계도 표시
+TEMPLATE_RELATIONS     = YES
+
+# 문서에 코드 같이 보여줄지
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES

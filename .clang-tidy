@@ -1,0 +1,35 @@
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  llvm-*,
+  misc-*,
+  readability-*,
+  bugprone-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  -modernize-use-auto,
+  -modernize-use-trailing-return-type,
+  -readability-magic-numbers,
+  -misc-unused-parameters,
+  -llvm-header-guard,
+  -readability-identifier-naming
+
+WarningsAsErrors: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  bugprone-*,
+  cppcoreguidelines-pro-bounds-*,
+  performance-*
+
+AnalyzeTemporaryDtors: false
+
+CheckOptions:
+  - { key: readability-identifier-naming.ClassCase, value: CamelCase }
+  - { key: readability-identifier-naming.EnumCase, value: CamelCase }
+  - { key: readability-identifier-naming.FunctionCase, value: CamelCase }
+  - { key: readability-identifier-naming.MemberCase, value: lower_case }
+  - { key: readability-identifier-naming.ParameterCase, value: lower_case }
+  - { key: readability-identifier-naming.UnionCase, value: CamelCase }
+  - { key: readability-identifier-naming.VariableCase, value: lower_case }
+  - { key: readability-identifier-naming.IgnoreMainLikeFunctions, value: 1 }

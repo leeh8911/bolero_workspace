@@ -1,0 +1,9 @@
+genrule(
+    name = "doxygen_html",
+    srcs = [
+        "//:Doxyfile",           # 루트의 Doxyfile
+        "//bolero:doxygen_srcs", # bolero/BUILD.bazel 에서 정의한 filegroup
+    ],
+    outs = ["html_stamp"],
+    cmd = "doxygen $(location //:Doxyfile) && echo done > $@",
+)

@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug bolero:test (gdb)",
+            "type": "cppdbg",
+            "request": "launch",
+            // bazel build //bolero:test 후 실제 생성된 바이너리 경로 확인 필수
+            "program": "${workspaceFolder}/bazel-bin/bolero/test",
+            "args": [],
+            "stopAtEntry": false,
+            // 워크스페이스 루트 기준으로 실행
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "gdb에 자동 서식 지정 사용",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "디스어셈블리 버전을 Intel(으)로 설정",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "fork 시 child를 따라가기",
+                    "text": "-gdb-set follow-fork-mode child",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,45 @@
+cc_library(
+    name="lib",
+    srcs=[
+        "src/bolero/config.cpp",
+        ],
+    hdrs=[
+        "src/bolero/config.hpp",
+        ],
+    includes = ["src"],
+    deps=[
+        "@nlohmann_json//:json",
+        "@yaml-cpp//:yaml-cpp"
+    ],
+    visibility=["//visibility:public"],
+    copts = select({
+        "@platforms//os:windows": ["/std:c++20"],
+        "//conditions:default":   ["-std=c++20"],
+    }),
+)
+
+cc_test(
+    name="test",
+    srcs=[
+        "test/test_main.cpp",
+        "test/bolero/test_config.cpp",
+        ],
+    deps=[
+        "//bolero:lib",
+        "@googletest//:gtest_main",
+    ],
+    visibility=["//visibility:private"],
+    copts = select({
+        "@platforms//os:windows": ["/std:c++20"],
+        "//conditions:default":   ["-std=c++20"],
+    }),
+)
+
+filegroup(
+    name = "doxygen_srcs",
+    srcs = glob([
+        "src/bolero/**/*.hpp",
+        "src/bolero/**/*.cpp",
+    ]),
+    visibility = ["//visibility:public"],
+)

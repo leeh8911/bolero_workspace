@@ -1,0 +1,60 @@
+BasedOnStyle: Google
+Standard: c++20
+
+# ---- 기본 레이아웃 / 들여쓰기 ----
+IndentWidth: 4                # Google(2) → 4칸으로 가독성 향상
+TabWidth: 4
+UseTab: Never
+
+# ---- 줄 길이 / 줄 바꿈 ----
+ColumnLimit: 110              # 80 → 110 정도로 넉넉하게
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: true
+
+# ---- 공백 / 괄호 ----
+SpaceBeforeParens: ControlStatements
+SpacesInParentheses: false
+SpacesInAngles: false
+SpaceAfterCStyleCast: true
+
+# ---- 중괄호 스타일 ----
+BreakBeforeBraces: Attach     # Google 기본과 동일 (함수 옆에 붙는 스타일)
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  BeforeElse: false
+  BeforeCatch: false
+
+# ---- 정렬 ----
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands:   true
+AlignAfterOpenBracket: Align
+PenaltyBreakAssignment: 50
+
+# ---- 네임스페이스 / include ----
+NamespaceIndentation: None
+SortIncludes: true
+IncludeBlocks: Regroup
+
+IncludeCategories:
+  # 1) 시스템 헤더: <vector>, <string> 처럼 슬래시 없는 것
+  - Regex: '^<[^/]+>$'
+    Priority: 1
+
+  # 2) 서드파티 헤더: 예) <nlohmann/json.hpp>, <boost/...> 등
+  - Regex: '^<*/.*>$'
+    Priority: 2
+
+  # 3) 프로젝트/로컬 헤더: "xxx.hpp"
+  - Regex: '^".*"$'
+    Priority: 3
+
+# ---- 기타 ----
+ReflowComments: true
+SortUsingDeclarations: true
