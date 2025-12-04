@@ -7,6 +7,7 @@ cc_library(
     hdrs=[
         "src/bolero/config.hpp",
         "src/bolero/config/config_utils.hpp",
+        "src/bolero/class_factory.hpp",
         ],
     includes = ["src"],
     deps=[
@@ -25,6 +26,7 @@ cc_test(
     srcs=[
         "test/test_main.cpp",
         "test/bolero/test_config.cpp",
+        "test/bolero/test_class_factory.cpp",
         ],
     deps=[
         "//bolero:lib",

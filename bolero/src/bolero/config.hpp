@@ -48,7 +48,7 @@ class Config {
     std::shared_ptr<nlohmann::json> json{nullptr};
 };
 
-std::ostream& operator<<(std::ostream& os, const Config& config) {
+inline std::ostream& operator<<(std::ostream& os, const Config& config) {
     if (config.json) {
         os << config.json->dump(4);
     } else {
