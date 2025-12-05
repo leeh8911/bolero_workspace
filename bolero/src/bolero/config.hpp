@@ -34,6 +34,7 @@ class Config {
     Config() = default;
 
     static Config FromFile(std::string_view path);
+    static Config FromJsonString(std::string_view json_str);
 
     void ToFile(std::string_view path) const;
 

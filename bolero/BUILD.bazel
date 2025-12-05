@@ -8,11 +8,16 @@ cc_library(
         "src/bolero/config.hpp",
         "src/bolero/config/config_utils.hpp",
         "src/bolero/class_factory.hpp",
+        "src/bolero/task.hpp",
         ],
-    includes = ["src"],
+    includes = [
+        "src",
+        "@eigen//",
+        ],
     deps=[
         "@nlohmann_json//:json",
-        "@yaml-cpp//:yaml-cpp"
+        "@yaml-cpp//:yaml-cpp",
+        "@eigen//:eigen"
     ],
     visibility=["//visibility:public"],
     copts = select({
@@ -27,6 +32,7 @@ cc_test(
         "test/test_main.cpp",
         "test/bolero/test_config.cpp",
         "test/bolero/test_class_factory.cpp",
+        "test/bolero/test_task.cpp",
         ],
     deps=[
         "//bolero:lib",

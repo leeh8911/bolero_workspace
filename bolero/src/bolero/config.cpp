@@ -29,6 +29,13 @@ Config Config::FromFile(std::string_view path) {
     return config;
 }
 
+Config Config::FromJsonString(std::string_view json_str) {
+    Config config;
+    nlohmann::json json = nlohmann::json::parse(json_str);
+    config.json = std::make_shared<nlohmann::json>(json);
+    return config;
+}
+
 void Config::ToFile(std::string_view path) const {
     if (path.ends_with(".json")) {
         ::bolero::config_utils::ToJsonFile(*json, path);
