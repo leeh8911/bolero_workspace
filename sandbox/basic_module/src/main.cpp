@@ -6,6 +6,7 @@
 #include "bolero/arg_parser.hpp"
 #include "bolero/class_factory.hpp"
 #include "bolero/config.hpp"
+#include "bolero/logger.hpp"
 #include "bolero/module.hpp"
 
 class BasicModule : public bolero::Module {
@@ -19,8 +20,14 @@ class BasicModule : public bolero::Module {
         auto& scheduler = this->GetScheduler();
 
         // 1초마다 메시지를 출력하는 주기 Task 등록
-        scheduler.AddPeriodicTask("print_hello", std::chrono::milliseconds(config["period_ms"]),
-                                  []() { std::cout << "[BasicModule] tick" << std::endl; });
+        scheduler.AddPeriodicTask("print_hello", std::chrono::milliseconds(config["period_ms"]), []() {
+            BOLERO_LOG_TRACE("Hello from BasicModule!");
+            BOLERO_LOG_DEBUG("Hello from BasicModule!");
+            BOLERO_LOG_INFO("Hello from BasicModule!");
+            BOLERO_LOG_WARN("Hello from BasicModule!");
+            BOLERO_LOG_ERROR("Hello from BasicModule!");
+            BOLERO_LOG_CRITICAL("Hello from BasicModule!");
+        });
 
         // 필요하면 one-shot task도 등록 가능
         scheduler.AddOneShotTask("one_shot",

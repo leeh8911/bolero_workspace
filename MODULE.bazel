@@ -26,6 +26,16 @@ bazel_dep(
 )
 
 bazel_dep(
+    name = "fmt",
+    version = "10.2.1.bcr.1",
+)
+
+bazel_dep(
+    name = "spdlog",
+    version = "1.13.0",
+)
+
+bazel_dep(
     name="googletest",
     version="1.14.0",
 )

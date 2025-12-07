@@ -11,6 +11,8 @@ cc_library(
         "@nlohmann_json//:json",
         "@yaml-cpp//:yaml-cpp",
         "@eigen//:eigen",
+        "@spdlog//:spdlog",  
+        "@fmt//:fmt",        
         "//externals/cxxopts:cxxopts",
     ],
     strip_include_prefix = "src",
