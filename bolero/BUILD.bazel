@@ -1,15 +1,8 @@
+
 cc_library(
     name="lib",
-    srcs=[
-        "src/bolero/config.cpp",
-        "src/bolero/config/config_utils.cpp",
-        ],
-    hdrs=[
-        "src/bolero/config.hpp",
-        "src/bolero/config/config_utils.hpp",
-        "src/bolero/class_factory.hpp",
-        "src/bolero/task.hpp",
-        ],
+    srcs= glob(["src/bolero/**/*.cpp"]),
+    hdrs= glob(["src/bolero/**/*.hpp"]),
     includes = [
         "src",
         "@eigen//",
@@ -17,8 +10,11 @@ cc_library(
     deps=[
         "@nlohmann_json//:json",
         "@yaml-cpp//:yaml-cpp",
-        "@eigen//:eigen"
+        "@eigen//:eigen",
+        "//externals/cxxopts:cxxopts",
     ],
+    strip_include_prefix = "src",
+    include_prefix = "",
     visibility=["//visibility:public"],
     copts = select({
         "@platforms//os:windows": ["/std:c++20"],
@@ -28,12 +24,7 @@ cc_library(
 
 cc_test(
     name="test",
-    srcs=[
-        "test/test_main.cpp",
-        "test/bolero/test_config.cpp",
-        "test/bolero/test_class_factory.cpp",
-        "test/bolero/test_task.cpp",
-        ],
+    srcs = glob(["test/**/*.cpp"]),
     deps=[
         "//bolero:lib",
         "@googletest//:gtest_main",
