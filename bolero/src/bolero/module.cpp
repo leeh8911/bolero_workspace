@@ -1,12 +1,30 @@
 #include "bolero/module.hpp"
 
 #include "bolero/config.hpp"
+#include "bolero/scheduler.hpp"
 #include "bolero/task.hpp"
 
 namespace bolero {
+Module::Module(const Config& config_) : config(config_) {
+}
+void Module::Wait() {
+    this->scheduler.Run();
+}
 
-Module::Module(const Config& config) {
-    this->task = Task::Create(config["type"], config["period"], [this]() { this->Run(); });
+/// 외부에서 graceful shutdown 하고 싶을 때
+void Module::Stop() {
+    this->scheduler.Stop();
+}
+
+const Config& Module::GetConfig() const {
+    return this->config;
+}
+
+Scheduler& Module::GetScheduler() {
+    return this->scheduler;
+}
+const Scheduler& Module::GetScheduler() const {
+    return this->scheduler;
 }
 
 }  // namespace bolero

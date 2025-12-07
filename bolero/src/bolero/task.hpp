@@ -1,14 +1,9 @@
 #pragma once
 
 #include <chrono>
-#include <condition_variable>
-#include <iostream>
+#include <functional>
 #include <memory>
-#include <mutex>
 #include <string>
-#include <thread>
-#include <utility>
-// task.hpp (개략)
 
 namespace bolero {
 
@@ -18,46 +13,46 @@ using TaskPtr = std::shared_ptr<Task>;
 class Task {
    public:
     using Clock = std::chrono::steady_clock;
+    using TimePoint = Clock::time_point;
+    using Duration = Clock::duration;
+    using Func = std::function<void()>;
 
-    template <typename FUNC>
-    static TaskPtr Create(std::string name, std::size_t period_ms, FUNC&& func) {
-        return std::make_shared<Task>(std::move(name), period_ms, std::forward<FUNC>(func));
+    Task(std::string name, Duration period, Func func, bool repeat)
+        : name_(std::move(name)),
+          period_(period),
+          func_(std::move(func)),
+          repeat_(repeat),
+          next_deadline_(Clock::now()) {}
+
+    const std::string& name() const { return name_; }
+    TimePoint next_deadline() const { return next_deadline_; }
+    Duration period() const { return period_; }
+    bool repeat() const { return repeat_; }
+
+    void ExecuteOnce() {
+        if (func_) {
+            func_();
+        }
     }
 
-    template <typename FUNC>
-    Task(std::string name_, std::size_t period_ms_, FUNC&& func_)
-        : name(std::move(name_)), period_ms(period_ms_), func(std::forward<FUNC>(func_)), stop_flag(false) {
-        thread = std::thread([this]() {
-            while (!stop_flag.load()) {
-                auto start = Clock::now();
-                func();  // BasicModule::Run() 호출
-
-                auto end = Clock::now();
-                auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-                if (elapsed_ms < static_cast<long long>(period_ms)) {
-                    auto sleep_ms = period_ms - static_cast<std::size_t>(elapsed_ms);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
-                }
-            }
-        });
-    }
-
-    ~Task() { Stop(); }
-
-    void Stop() {
-        stop_flag.store(true);
-        if (thread.joinable()) {
-            thread.join();
+    /// 주기적인 Task일 때, 다음 실행 시점을 갱신
+    void ScheduleNextFrom(TimePoint now) {
+        if (!repeat_) {
+            return;
+        }
+        if (period_.count() <= 0) {
+            next_deadline_ = now;
+        } else {
+            next_deadline_ = now + period_;
         }
     }
 
    private:
-    std::string name;
-    std::size_t period_ms{1};
-    std::function<void()> func;
-    std::thread thread;
-    std::atomic<bool> stop_flag{false};
+    std::string name_;
+    Duration period_;
+    Func func_;
+    bool repeat_;
+    TimePoint next_deadline_;
 };
 
 }  // namespace bolero
