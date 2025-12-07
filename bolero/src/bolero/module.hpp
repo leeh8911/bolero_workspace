@@ -3,17 +3,21 @@
 #include <string>
 
 #include "bolero/class_factory.hpp"
+#include "bolero/task.hpp"
 
 namespace bolero {
 class Module {
    public:
-    Module() = default;
+    Module(const Config& config);
     virtual ~Module() = default;
 
-    virtual std::string Name() const = 0;
+    void operator()();
+
+    virtual void Run() = 0;
 
    private:
+    TaskPtr task{nullptr};
 };
-BUILD_FACTORY(ModuleFactory, Module);
 
 }  // namespace bolero
+BUILD_FACTORY(MODULE_FACTORY, bolero::Module);

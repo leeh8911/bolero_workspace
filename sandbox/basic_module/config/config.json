@@ -1,3 +1,4 @@
 {
-    "type": "BasicModule"
+    "type": "BasicModule",
+    "period": 10
 }

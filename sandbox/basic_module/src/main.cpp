@@ -9,13 +9,12 @@
 
 class BasicModule : public bolero::Module {
    public:
-    BasicModule() = default;
+    BasicModule(const bolero::Config& config) : bolero::Module(config) {}
     ~BasicModule() override = default;
 
-    std::string Name() const override { return "BasicModule"; }
+    void Run() override { std::cout << "Running BasicModule..." << std::endl; }
 };
-
-BUILD_FACTORY(MODULE_FACTORY, BasicModule);
+REGIST_CLASS(MODULE_FACTORY, BasicModule);
 
 int main(int argc, char* argv[]) {
     bolero::ArgParser parser(argc, argv);
@@ -27,9 +26,7 @@ int main(int argc, char* argv[]) {
 
     auto module_ptr = MAKE_CLASS(MODULE_FACTORY, config);
 
-    // module_ptr->Run();
-
-    // module_ptr->Wait();
+    (*module_ptr)();
 
     return 0;
 }
