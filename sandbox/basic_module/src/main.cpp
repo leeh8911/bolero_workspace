@@ -26,7 +26,5 @@ int main(int argc, char* argv[]) {
 
     auto module_ptr = MAKE_CLASS(MODULE_FACTORY, config);
 
-    (*module_ptr)();
-
     return 0;
 }

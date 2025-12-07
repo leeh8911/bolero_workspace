@@ -11,8 +11,6 @@ class Module {
     Module(const Config& config);
     virtual ~Module() = default;
 
-    void operator()();
-
     virtual void Run() = 0;
 
    private:
