@@ -24,9 +24,6 @@ class Logger {
 
             auto multi_logger = std::make_shared<spdlog::logger>("bolero_logger", sinks.begin(), sinks.end());
 
-            // 패턴에 파일/라인/함수 포함:
-            // %s = 파일명, %# = 라인, %! = 함수명
-            // 예: [2025-01-21 12:34:56.789] [info] [module.cpp:42 MyClass::Foo] 메시지
             multi_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [%s:%# %!] %v");
 
             multi_logger->set_level(spdlog::level::trace);
