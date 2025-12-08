@@ -98,7 +98,7 @@ class Publisher {
 
     void publish(const MessagePayload& payload);
     template <typename T>
-    void publish_message(const T& message) {
+    void publish(const T& message) {
         // Serialize T to MessagePayload
         MessagePayload payload(sizeof(T));
         memcpy(payload.data(), &message, sizeof(T));

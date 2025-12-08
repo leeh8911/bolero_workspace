@@ -3,7 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include <spdlog/common.h>  // spdlog::source_loc, SPDLOG_FUNCTION
+#include <spdlog/common.h>    // spdlog::source_loc, SPDLOG_FUNCTION
+#include <spdlog/fmt/ostr.h>  // ← 이 줄 추가
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
