@@ -14,10 +14,7 @@ class Logger {
    public:
     static std::shared_ptr<spdlog::logger> GetLogger() {
         static std::shared_ptr<spdlog::logger> logger = [] {
-            // 콘솔 sink
             auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-
-            // 파일 sink
             auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("bolero.log", true);
 
             std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
