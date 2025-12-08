@@ -31,7 +31,7 @@ class ExcommSubModule : public bolero::Module {
         // });
     }
 };
-REGIST_CLASS(MODULE_FACTORY, BasicModule);
+REGIST_CLASS(MODULE_FACTORY, ExcommSubModule);
 
 int main(int argc, char* argv[]) {
     bolero::ArgParser parser(argc, argv);

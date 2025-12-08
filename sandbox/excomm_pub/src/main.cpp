@@ -26,11 +26,11 @@ class ExcommPubModule : public bolero::Module {
 
         // 1초마다 메시지를 출력하는 주기 Task 등록
         scheduler.AddPeriodicTask("print_hello", std::chrono::milliseconds(config["period_ms"]), [pub]() {
-            pub->publish<std::string>("ExcommPub: " + std::to_string(std::time(nullptr)));
+            pub->publish<std::string>(std::format("ExcommPub: {}", ) + std::to_string(std::time(nullptr)));
         });
     }
 };
-REGIST_CLASS(MODULE_FACTORY, BasicModule);
+REGIST_CLASS(MODULE_FACTORY, ExcommPubModule);
 
 int main(int argc, char* argv[]) {
     bolero::ArgParser parser(argc, argv);

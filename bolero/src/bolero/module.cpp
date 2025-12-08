@@ -6,8 +6,7 @@
 #include "bolero/task.hpp"
 
 namespace bolero {
-Module::Module(const Config& config_) : config(config_) {
-    this->node = Node(std::string(config["type"]));
+Module::Module(const Config& config_) : config(config_), scheduler(), node(std::string(config["type"])) {
 }
 void Module::Wait() {
     this->scheduler.Run();
