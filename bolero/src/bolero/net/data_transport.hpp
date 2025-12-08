@@ -91,12 +91,11 @@ class DataTransport : public std::enable_shared_from_this<DataTransport> {
         memcpy(payload.data(), this->receive_buffer.data() + sizeof(uint32_t) + topic_size, payload.size());
 
         if (this->receive_callback) {
-            TopicMessage message{
-                .topic = std::move(topic),
-                .payload = std::move(payload),
-                .remote_ip = this->remote_endpoint.address().to_string(),
-                .remote_port = this->remote_endpoint.port(),
-            };
+            TopicMessage message;
+            message.topic = std::move(topic);
+            message.payload = std::move(payload);
+            message.remote_ip = this->remote_endpoint.address().to_string();
+            message.remote_port = this->remote_endpoint.port();
             this->receive_callback(message);
         }
     }

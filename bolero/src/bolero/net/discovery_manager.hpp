@@ -105,7 +105,6 @@ class DiscoveryManager : public std::enable_shared_from_this<DiscoveryManager> {
         return false;  // 우선 비워둠
     }
 
-   private:
     asio::io_context& io;
 
     asio::ip::udp::socket socket;
