@@ -13,6 +13,7 @@ cc_library(
         "@eigen//:eigen",
         "@spdlog//:spdlog",  
         "@fmt//:fmt",        
+        "@asio//:asio",
         "//externals/cxxopts:cxxopts",
     ],
     strip_include_prefix = "src",

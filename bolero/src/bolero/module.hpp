@@ -21,6 +21,12 @@ class Module {
     /// 외부에서 graceful shutdown 하고 싶을 때
     virtual void Stop();
 
+    template <typename T>
+    void CreatePublisher(const std::string& topic_name, const T& message) {}
+
+    template <typename T>
+    void CreateSubscriber(const std::string& topic_name, std::function<void(const T&)> callback) {}
+
    protected:
     const Config& GetConfig() const;
 
