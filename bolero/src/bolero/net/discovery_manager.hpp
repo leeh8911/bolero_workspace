@@ -88,6 +88,14 @@ class DiscoveryManager : public std::enable_shared_from_this<DiscoveryManager> {
         if (!this->DecodeJson(json, evt))
             return;
 
+        // multicast 패킷의 송신자 IP를 신뢰해 ip 필드를 보정한다.
+        // announce 시점에 0.0.0.0으로 채워 보내기 때문에, 실제 보내온 원격 주소를 사용해야
+        // publisher가 subscriber에게 데이터를 전송할 수 있다.
+        auto sender_ip = this->remote_ep_.address().to_string();
+        if (evt.ip.empty() || evt.ip == "0.0.0.0") {
+            evt.ip = sender_ip;
+        }
+
         if (callback) {
             callback(evt);
         }
