@@ -3,6 +3,12 @@
 #include <chrono>
 #include <iostream>
 
+#include "bolero/logger.hpp"
+#include "bolero/net/data_transport.hpp"
+#include "bolero/net/discovery_manager.hpp"
+#include "bolero/net/publisher.hpp"
+#include "bolero/net/subscriber.hpp"
+
 namespace bolero {
 
 using namespace std::chrono_literals;
@@ -34,8 +40,8 @@ void Node::start() {
     // io_context run
     io_thread_ = std::thread([this]() { io_.run(); });
 
-    std::cout << "[Node] started: " << node_name_ << " id=" << node_id_
-              << " data_port=" << data_transport_->LocalPort() << std::endl;
+    BOLERO_LOG_TRACE("Node started: {} id={} data_port={}", node_name_, node_id_,
+                     data_transport_->LocalPort());
 }
 
 void Node::stop() {
@@ -136,8 +142,8 @@ void Node::handle_discovery_event(const DiscoveryEvent& evt) {
                                       [&](const RemoteEndpoint& r) { return r.node_id == evt.node_id; });
             if (found == vec.end()) {
                 vec.push_back(RemoteEndpoint{evt.node_id, evt.ip, evt.data_port});
-                std::cout << "[Node] discovered subscriber for topic '" << evt.topic << "' at " << evt.ip
-                          << ":" << evt.data_port << std::endl;
+                BOLERO_LOG_TRACE("Added remote subscriber for topic '{}' at {}:{}", evt.topic, evt.ip,
+                                 evt.data_port);
             }
         }
     } else if (evt.msg_type == "PUB_ANNOUNCE") {
@@ -148,8 +154,8 @@ void Node::handle_discovery_event(const DiscoveryEvent& evt) {
         }
 
         if (i_am_subscriber) {
-            std::cout << "[Node] discovered publisher for topic '" << evt.topic << "' at " << evt.ip << ":"
-                      << evt.data_port << std::endl;
+            BOLERO_LOG_TRACE("Node::handle_discovery_event PUB_ANNOUNCE topic='{}' from node_id='{}'",
+                             evt.topic, evt.node_id);
             // 현재 구조에서는 publisher endpoint를 굳이 저장하지 않아도 됨.
             // 필요하면 remote_publishers_ 구조를 추가 가능.
         }
@@ -205,11 +211,5 @@ std::string Node::generate_node_id(const std::string& name) const {
 }
 
 // -------- Publisher / Subscriber 구현 --------
-
-void Publisher::publish(const MessagePayload& payload) {
-    if (auto node = node_.lock()) {
-        node->publish_raw(topic_, payload);
-    }
-}
 
 }  // namespace bolero

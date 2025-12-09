@@ -11,17 +11,13 @@
 
 #include "bolero/net/data_transport.hpp"
 #include "bolero/net/discovery_manager.hpp"
+#include "bolero/net/message_payload.hpp"
+#include "bolero/net/publisher.hpp"
+#include "bolero/net/subscriber.hpp"
 
 #include <asio.hpp>
 
 namespace bolero {
-
-class Node;
-class Publisher;
-class Subscriber;
-
-using MessagePayload = std::vector<uint8_t>;
-using MessageCallback = std::function<void(const std::string& topic, const MessagePayload& payload)>;
 
 // 간단한 remote endpoint 표현
 struct RemoteEndpoint {
@@ -92,38 +88,5 @@ class Node : public std::enable_shared_from_this<Node> {
 };
 
 using NodePtr = std::shared_ptr<Node>;
-
-class Publisher {
-   public:
-    Publisher(std::weak_ptr<Node> node, std::string topic)
-        : node_(std::move(node)), topic_(std::move(topic)) {}
-
-    void publish(const MessagePayload& payload);
-    template <typename T>
-    void publish(const T& message) {
-        // Serialize T to MessagePayload
-        MessagePayload payload(sizeof(T));
-        memcpy(payload.data(), &message, sizeof(T));
-        publish(payload);
-    }
-
-    const std::string& topic() const { return topic_; }
-
-   private:
-    std::weak_ptr<Node> node_;
-    std::string topic_;
-};
-
-class Subscriber {
-   public:
-    Subscriber(std::weak_ptr<Node> node, std::string topic)
-        : node_(std::move(node)), topic_(std::move(topic)) {}
-
-    const std::string& topic() const { return topic_; }
-
-   private:
-    std::weak_ptr<Node> node_;
-    std::string topic_;
-};
 
 }  // namespace bolero
