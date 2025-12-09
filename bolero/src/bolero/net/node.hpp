@@ -91,6 +91,8 @@ class Node : public std::enable_shared_from_this<Node> {
     std::unordered_set<std::string> local_subscribed_topics_;
 };
 
+using NodePtr = std::shared_ptr<Node>;
+
 class Publisher {
    public:
     Publisher(std::weak_ptr<Node> node, std::string topic)

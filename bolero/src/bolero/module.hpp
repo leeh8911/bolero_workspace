@@ -25,23 +25,23 @@ class Module {
     virtual void Stop();
 
     std::shared_ptr<Publisher> CreatePublisher(const std::string& topic_name) {
-        auto pub = this->node.create_publisher(topic_name);
+        auto pub = this->node->create_publisher(topic_name);
         return pub;
     }
 
     template <typename T>
     void CreateSubscriber(const std::string& topic_name, std::function<void(const T&)> callback) {
-        this->node.create_subscriber(topic_name,
-                                     [callback](const std::string& topic, const MessagePayload& payload) {
-                                         // Deserialize payload to T
-                                         T message;
-                                         // 여기서는 간단히 memcpy로 가정 (실제 구현에서는 proper
-                                         // serialization 필요)
-                                         if (payload.size() == sizeof(T)) {
-                                             memcpy(&message, payload.data(), sizeof(T));
-                                             callback(message);
-                                         }
-                                     });
+        this->node->create_subscriber(topic_name,
+                                      [callback](const std::string& topic, const MessagePayload& payload) {
+                                          // Deserialize payload to T
+                                          T message;
+                                          // 여기서는 간단히 memcpy로 가정 (실제 구현에서는 proper
+                                          // serialization 필요)
+                                          if (payload.size() == sizeof(T)) {
+                                              memcpy(&message, payload.data(), sizeof(T));
+                                              callback(message);
+                                          }
+                                      });
     }
 
    protected:
@@ -53,7 +53,7 @@ class Module {
    private:
     Config config;
     Scheduler scheduler;
-    Node node;
+    NodePtr node;
 };
 
 }  // namespace bolero

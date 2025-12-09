@@ -54,6 +54,7 @@ void Node::stop() {
 }
 
 std::shared_ptr<Publisher> Node::create_publisher(const std::string& topic) {
+    BOLERO_LOG_TRACE("Node::create_publisher topic='{}'", topic);
     {
         std::lock_guard<std::mutex> lock(mutex_);
         local_published_topics_.insert(topic);
@@ -63,10 +64,12 @@ std::shared_ptr<Publisher> Node::create_publisher(const std::string& topic) {
     announce_pub(topic);
 
     // Publisher 객체는 단순 핸들
-    return std::make_shared<Publisher>(shared_from_this(), topic);
+    auto self = shared_from_this();
+    return std::make_shared<Publisher>(self, topic);
 }
 
 std::shared_ptr<Subscriber> Node::create_subscriber(const std::string& topic, MessageCallback callback) {
+    BOLERO_LOG_TRACE("Node::create_subscriber topic='{}'", topic);
     {
         std::lock_guard<std::mutex> lock(mutex_);
         local_subscribed_topics_.insert(topic);
@@ -76,7 +79,8 @@ std::shared_ptr<Subscriber> Node::create_subscriber(const std::string& topic, Me
     // announce
     announce_sub(topic);
 
-    return std::make_shared<Subscriber>(shared_from_this(), topic);
+    auto self = shared_from_this();
+    return std::make_shared<Subscriber>(self, topic);
 }
 
 void Node::publish_string(const std::string& topic, const std::string& text) {

@@ -2,5 +2,6 @@ bazel-*
 bazel-*/
 
 *.lock
+*.log
 
 .vscode/
