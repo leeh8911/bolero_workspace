@@ -13,7 +13,7 @@ class ExcommPubModule : public bolero::Module {
    public:
     using bolero::Module::Module;  // 생성자 상속
     ExcommPubModule(const bolero::Config& config) : bolero::Module(config) {
-        BOLERO_LOG_INFO("ExcommPubModule initialized with config: {}", config);
+        BOLERO_LOG_INFO("ExcommPubModule initialized with config: {}", to_string(config));
     }
 
     void Run() override {
@@ -26,7 +26,9 @@ class ExcommPubModule : public bolero::Module {
 
         // 1초마다 메시지를 출력하는 주기 Task 등록
         scheduler.AddPeriodicTask("print_hello", std::chrono::milliseconds(config["period_ms"]), [pub]() {
-            pub->publish<std::string>("ExcommPub: " + std::to_string(std::time(nullptr)));
+            size_t value = std::time(nullptr);
+            BOLERO_LOG_INFO("Publishing message: {}", value);
+            pub->publish<size_t>(std::time(nullptr));
         });
     }
 };
@@ -37,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     auto args = parser.Parse();
 
-    auto config = bolero::Config::FromFile("sandbox/basic_module/config/config.json");
+    auto config = bolero::Config::FromFile("sandbox/excomm_pub/config/config.json");
     std::cout << "Config file: " << config << std::endl;
 
     auto module_ptr = MAKE_CLASS(MODULE_FACTORY, config);

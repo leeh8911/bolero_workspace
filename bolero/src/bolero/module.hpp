@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory.h>
+
 #include "bolero/class_factory.hpp"
 #include "bolero/config.hpp"
 #include "bolero/net/node.hpp"

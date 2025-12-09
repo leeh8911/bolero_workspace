@@ -57,4 +57,10 @@ inline std::ostream& operator<<(std::ostream& os, const Config& config) {
     }
     return os;
 }
+
+inline std::string to_string(const Config& config) {
+    std::stringstream ss;
+    ss << config;
+    return ss.str();
+}
 }  // namespace bolero
