@@ -2,7 +2,9 @@
 
 #include <array>
 #include <atomic>
+#include <cctype>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -100,9 +102,67 @@ class DiscoveryManager : public std::enable_shared_from_this<DiscoveryManager> {
     }
 
     bool DecodeJson(const std::string& str, DiscoveryEvent& evt) {
-        // TODO: simple parse or replace with nlohmann::json
-        // 지금은 단순한 프로토타입만 사용하자.
-        return false;  // 우선 비워둠
+        auto parse_string_field = [&str](const std::string& key, std::string& out) {
+            const std::string token = "\"" + key + "\":";
+            auto key_pos = str.find(token);
+            if (key_pos == std::string::npos)
+                return false;
+
+            auto value_start = str.find('"', key_pos + token.size());
+            if (value_start == std::string::npos)
+                return false;
+
+            auto value_end = str.find('"', value_start + 1);
+            if (value_end == std::string::npos)
+                return false;
+
+            out = str.substr(value_start + 1, value_end - value_start - 1);
+            return true;
+        };
+
+        auto parse_uint16_field = [&str](const std::string& key, uint16_t& out) {
+            const std::string token = "\"" + key + "\":";
+            auto key_pos = str.find(token);
+            if (key_pos == std::string::npos)
+                return false;
+
+            auto value_start = key_pos + token.size();
+            while (value_start < str.size() && std::isspace(static_cast<unsigned char>(str[value_start]))) {
+                ++value_start;
+            }
+
+            auto value_end = value_start;
+            while (value_end < str.size() && std::isdigit(static_cast<unsigned char>(str[value_end]))) {
+                ++value_end;
+            }
+
+            if (value_end == value_start)
+                return false;
+
+            try {
+                unsigned long value = std::stoul(str.substr(value_start, value_end - value_start));
+                if (value > std::numeric_limits<uint16_t>::max())
+                    return false;
+                out = static_cast<uint16_t>(value);
+            } catch (...) {
+                return false;
+            }
+
+            return true;
+        };
+
+        if (!parse_string_field("msg_type", evt.msg_type))
+            return false;
+        if (!parse_string_field("topic", evt.topic))
+            return false;
+        if (!parse_string_field("node_id", evt.node_id))
+            return false;
+        if (!parse_string_field("ip", evt.ip))
+            return false;
+        if (!parse_uint16_field("data_port", evt.data_port))
+            return false;
+
+        return true;
     }
 
     asio::io_context& io;
