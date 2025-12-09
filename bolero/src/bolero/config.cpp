@@ -1,11 +1,11 @@
 #include "bolero/config.hpp"
 
+#include <yaml-cpp/yaml.h>
+
 #include <filesystem>
 #include <fstream>
 #include <string>
 #include <string_view>
-
-#include <yaml-cpp/yaml.h>
 
 #include <nlohmann/json.hpp>
 

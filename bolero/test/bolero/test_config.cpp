@@ -1,7 +1,8 @@
+#include <gtest/gtest.h>
+
 #include <filesystem>
 
 #include "bolero/config.hpp"
-#include <gtest/gtest.h>
 
 class TestConfig : public ::testing::Test {
    public:

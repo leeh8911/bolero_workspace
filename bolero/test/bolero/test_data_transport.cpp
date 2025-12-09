@@ -1,8 +1,8 @@
+#include <gtest/gtest.h>
+
 #include <atomic>
 #include <chrono>
 #include <thread>
-
-#include <gtest/gtest.h>
 
 #include "bolero/net/data_transport.hpp"  // 실제 경로에 맞게 수정
 
