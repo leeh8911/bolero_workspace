@@ -12,13 +12,13 @@ class Node;
 
 class Subscriber {
    public:
-    Subscriber(std::weak_ptr<Node> node, std::string topic)
-        : node_(std::move(node)), topic_(std::move(topic)) {}
+    Subscriber(std::weak_ptr<Node> node_, std::string topic_)
+        : node(std::move(node_)), topic(std::move(topic_)) {}
 
-    const std::string& topic() const { return topic_; }
+    const std::string& Topic() const { return topic; }
 
    private:
-    std::weak_ptr<Node> node_;
-    std::string topic_;
+    std::weak_ptr<Node> node;
+    std::string topic;
 };
 }  // namespace bolero

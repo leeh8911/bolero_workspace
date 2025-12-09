@@ -4,9 +4,9 @@
 
 namespace bolero {
 
-void Publisher::publish(const MessagePayload& payload) {
-    if (auto node = node_.lock()) {
-        node->publish_raw(topic_, payload);
+void Publisher::Publish(const MessagePayload& payload) {
+    if (auto node = this->node.lock()) {
+        node->PublishRaw(this->topic, payload);
     }
 }
 

@@ -36,7 +36,7 @@ class Scheduler {
 
     /// Task 취소
     void Cancel(TaskId id) {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<std::mutex> lock(mutex);
         tasks_.erase(id);
         cv_.notify_all();
     }
@@ -48,7 +48,7 @@ class Scheduler {
     /// - one-shot Task는 실행 후 삭제
     /// - Stop()이 호출되면 루프 종료
     void Run() {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex);
 
         while (!stop_) {
             if (tasks_.empty()) {
@@ -98,7 +98,7 @@ class Scheduler {
 
     /// Run() 루프를 깨우고 종료 요청
     void Stop() {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<std::mutex> lock(mutex);
         stop_ = true;
         cv_.notify_all();
     }
@@ -106,7 +106,7 @@ class Scheduler {
    private:
     template <typename FUNC>
     TaskId AddTaskImpl(std::string name, Task::Duration period, FUNC&& func, bool repeat) {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<std::mutex> lock(mutex);
 
         TaskId id = next_id_++;
 
@@ -153,7 +153,7 @@ class Scheduler {
     TaskMap tasks_;
     TaskId next_id_{0};
     bool stop_{false};
-    mutable std::mutex mutex_;
+    mutable std::mutex mutex;
     std::condition_variable cv_;
 };
 

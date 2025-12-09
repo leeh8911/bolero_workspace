@@ -14,92 +14,86 @@ namespace bolero {
 using namespace std::chrono_literals;
 
 Node::Node(const std::string& node_name, const std::string& multicast_ip, uint16_t multicast_port)
-    : node_name_(node_name), node_id_(generate_node_id(node_name_)) {
-    data_transport_ = std::make_shared<DataTransport>(io_, 0);
+    : node_name(node_name), node_id(GenerateNodeId(node_name)) {
+    data_transport = std::make_shared<DataTransport>(io_context, 0);
 
-    discovery_ = std::make_shared<DiscoveryManager>(io_, multicast_ip, multicast_port);
+    discovery = std::make_shared<DiscoveryManager>(io_context, multicast_ip, multicast_port);
 }
 
 Node::~Node() {
-    stop();
+    Stop();
 }
 
-void Node::start() {
-    if (running_)
+void Node::Start() {
+    if (running)
         return;
-    running_ = true;
+    running = true;
 
     // DataTransport 수신 시작
-    data_transport_->Start(
-        [self = shared_from_this()](const TopicMessage& msg) { self->handle_data_message(msg); });
+    data_transport->Start(
+        [self = shared_from_this()](const TopicMessage& msg) { self->HandleDataMessage(msg); });
 
     // DiscoveryManager 수신 시작
-    discovery_->Start(
-        [self = shared_from_this()](const DiscoveryEvent& evt) { self->handle_discovery_event(evt); });
+    discovery->Start(
+        [self = shared_from_this()](const DiscoveryEvent& evt) { self->HandleDiscoveryEvent(evt); });
 
     // io_context run
-    io_thread_ = std::thread([this]() { io_.run(); });
+    io_thread = std::thread([this]() { io_context.run(); });
 
-    BOLERO_LOG_TRACE("Node started: {} id={} data_port={}", node_name_, node_id_,
-                     data_transport_->LocalPort());
+    BOLERO_LOG_TRACE("Node started: {} id={} data_port={}", node_name, node_id, data_transport->LocalPort());
 }
 
-void Node::stop() {
-    if (!running_)
+void Node::Stop() {
+    if (!running)
         return;
-    running_ = false;
+    running = false;
 
     // 정리
-    data_transport_->Stop();
-    discovery_->Stop();
+    data_transport->Stop();
+    discovery->Stop();
 
-    io_.stop();
-    if (io_thread_.joinable()) {
-        io_thread_.join();
+    io_context.stop();
+    if (io_thread.joinable()) {
+        io_thread.join();
     }
 }
 
-std::shared_ptr<Publisher> Node::create_publisher(const std::string& topic) {
-    BOLERO_LOG_TRACE("Node::create_publisher topic='{}'", topic);
+std::shared_ptr<Publisher> Node::CreatePublisher(const std::string& topic) {
+    BOLERO_LOG_TRACE("Node::CreatePublisher topic='{}'", topic);
     {
-        std::lock_guard<std::mutex> lock(mutex_);
-        local_published_topics_.insert(topic);
+        std::lock_guard<std::mutex> lock(mutex);
+        local_published_topics.insert(topic);
     }
 
     // announce
-    announce_pub(topic);
+    AnnouncePublish(topic);
 
     // Publisher 객체는 단순 핸들
     auto self = shared_from_this();
     return std::make_shared<Publisher>(self, topic);
 }
 
-std::shared_ptr<Subscriber> Node::create_subscriber(const std::string& topic, MessageCallback callback) {
-    BOLERO_LOG_TRACE("Node::create_subscriber topic='{}'", topic);
+std::shared_ptr<Subscriber> Node::CreateSubscriber(const std::string& topic, MessageCallback callback) {
+    BOLERO_LOG_TRACE("Node::CreateSubscriber topic='{}'", topic);
     {
-        std::lock_guard<std::mutex> lock(mutex_);
-        local_subscribed_topics_.insert(topic);
-        local_subscribers_[topic].push_back(std::move(callback));
+        std::lock_guard<std::mutex> lock(mutex);
+        local_subscribed_topics.insert(topic);
+        local_subscribers[topic].push_back(std::move(callback));
     }
 
     // announce
-    announce_sub(topic);
+    AnnounceSubscribe(topic);
 
     auto self = shared_from_this();
     return std::make_shared<Subscriber>(self, topic);
 }
 
-void Node::publish_string(const std::string& topic, const std::string& text) {
-    MessagePayload payload(text.begin(), text.end());
-    publish_raw(topic, payload);
-}
-
-void Node::publish_raw(const std::string& topic, const MessagePayload& payload) {
+void Node::PublishRaw(const std::string& topic, const MessagePayload& payload) {
     std::vector<RemoteEndpoint> subscribers_copy;
     {
-        std::lock_guard<std::mutex> lock(mutex_);
-        auto it = remote_subscribers_.find(topic);
-        if (it != remote_subscribers_.end()) {
+        std::lock_guard<std::mutex> lock(mutex);
+        auto it = remote_subscribers.find(topic);
+        if (it != remote_subscribers.end()) {
             subscribers_copy = it->second;
         }
     }
@@ -111,17 +105,17 @@ void Node::publish_raw(const std::string& topic, const MessagePayload& payload) 
     }
 
     for (const auto& ep : subscribers_copy) {
-        data_transport_->SendTo(ep.ip, ep.port, topic, payload);
+        data_transport->SendTo(ep.ip, ep.port, topic, payload);
     }
 }
 
 // Discovery 이벤트 처리
-void Node::handle_discovery_event(const DiscoveryEvent& evt) {
+void Node::HandleDiscoveryEvent(const DiscoveryEvent& evt) {
     // 기본 정책:
     // 1) SUB_ANNOUNCE: 내가 같은 topic의 publisher면 remote_subscribers_에 등록
     // 2) PUB_ANNOUNCE: 내가 같은 topic의 subscriber면 (일단은 로그만)
 
-    if (evt.node_id == node_id_) {
+    if (evt.node_id == node_id) {
         // 자기 자신이 쏜 announce는 무시
         return;
     }
@@ -129,14 +123,14 @@ void Node::handle_discovery_event(const DiscoveryEvent& evt) {
     if (evt.msg_type == "SUB_ANNOUNCE") {
         bool i_am_publisher = false;
         {
-            std::lock_guard<std::mutex> lock(mutex_);
-            i_am_publisher = (local_published_topics_.count(evt.topic) > 0);
+            std::lock_guard<std::mutex> lock(mutex);
+            i_am_publisher = (local_published_topics.count(evt.topic) > 0);
         }
 
         if (i_am_publisher) {
-            std::lock_guard<std::mutex> lock(mutex_);
+            std::lock_guard<std::mutex> lock(mutex);
 
-            auto& vec = remote_subscribers_[evt.topic];
+            auto& vec = remote_subscribers[evt.topic];
             // 중복 방지
             auto found = std::find_if(vec.begin(), vec.end(),
                                       [&](const RemoteEndpoint& r) { return r.node_id == evt.node_id; });
@@ -149,12 +143,12 @@ void Node::handle_discovery_event(const DiscoveryEvent& evt) {
     } else if (evt.msg_type == "PUB_ANNOUNCE") {
         bool i_am_subscriber = false;
         {
-            std::lock_guard<std::mutex> lock(mutex_);
-            i_am_subscriber = (local_subscribed_topics_.count(evt.topic) > 0);
+            std::lock_guard<std::mutex> lock(mutex);
+            i_am_subscriber = (local_subscribed_topics.count(evt.topic) > 0);
         }
 
         if (i_am_subscriber) {
-            BOLERO_LOG_TRACE("Node::handle_discovery_event PUB_ANNOUNCE topic='{}' from node_id='{}'",
+            BOLERO_LOG_TRACE("Node::HandleDiscoveryEvent PUB_ANNOUNCE topic='{}' from node_id='{}'",
                              evt.topic, evt.node_id);
             // 현재 구조에서는 publisher endpoint를 굳이 저장하지 않아도 됨.
             // 필요하면 remote_publishers_ 구조를 추가 가능.
@@ -163,13 +157,13 @@ void Node::handle_discovery_event(const DiscoveryEvent& evt) {
 }
 
 // 데이터 메시지 처리
-void Node::handle_data_message(const TopicMessage& msg) {
+void Node::HandleDataMessage(const TopicMessage& msg) {
+    BOLERO_LOG_TRACE("Node::HandleDataMessage topic='{}' payload_size={}", msg.topic, msg.payload.size());
     std::vector<MessageCallback> callbacks;
-
     {
-        std::lock_guard<std::mutex> lock(mutex_);
-        auto it = local_subscribers_.find(msg.topic);
-        if (it != local_subscribers_.end()) {
+        std::lock_guard<std::mutex> lock(mutex);
+        auto it = local_subscribers.find(msg.topic);
+        if (it != local_subscribers.end()) {
             callbacks = it->second;  // copy
         }
     }
@@ -182,29 +176,29 @@ void Node::handle_data_message(const TopicMessage& msg) {
     }
 }
 
-void Node::announce_pub(const std::string& topic) {
+void Node::AnnouncePublish(const std::string& topic) {
     DiscoveryEvent evt;
     evt.msg_type = "PUB_ANNOUNCE";
     evt.topic = topic;
-    evt.node_id = node_id_;
+    evt.node_id = node_id;
     evt.ip = "0.0.0.0";  // DiscoveryManager 쪽에서 remote 주소/port 사용할 수도 있음
-    evt.data_port = data_transport_->LocalPort();
+    evt.data_port = data_transport->LocalPort();
 
-    discovery_->SendAnnounce(evt);
+    discovery->SendAnnounce(evt);
 }
 
-void Node::announce_sub(const std::string& topic) {
+void Node::AnnounceSubscribe(const std::string& topic) {
     DiscoveryEvent evt;
     evt.msg_type = "SUB_ANNOUNCE";
     evt.topic = topic;
-    evt.node_id = node_id_;
+    evt.node_id = node_id;
     evt.ip = "0.0.0.0";
-    evt.data_port = data_transport_->LocalPort();
+    evt.data_port = data_transport->LocalPort();
 
-    discovery_->SendAnnounce(evt);
+    discovery->SendAnnounce(evt);
 }
 
-std::string Node::generate_node_id(const std::string& name) const {
+std::string Node::GenerateNodeId(const std::string& name) const {
     // 간단한 UUID 대용 (실제 구현에서는 진짜 UUID 라이브러리 사용 권장)
     auto now = std::chrono::steady_clock::now().time_since_epoch().count();
     return name + "-" + std::to_string(now);

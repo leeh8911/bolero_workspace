@@ -13,24 +13,24 @@ class Node;
 
 class Publisher {
    public:
-    Publisher(std::weak_ptr<Node> node, std::string topic)
-        : node_(std::move(node)), topic_(std::move(topic)) {}
+    Publisher(std::weak_ptr<Node> node_, std::string topic_)
+        : node(std::move(node_)), topic(std::move(topic_)) {}
 
-    void publish(const MessagePayload& payload);
+    void Publish(const MessagePayload& payload);
 
     template <typename T>
-    void publish(const T& message) {
+    void Publish(const T& message) {
         // Serialize T to MessagePayload
         MessagePayload payload(sizeof(T));
         memcpy(payload.data(), &message, sizeof(T));
-        publish(payload);
+        Publish(payload);
     }
 
-    const std::string& topic() const { return topic_; }
+    const std::string& Topic() const { return topic; }
 
    private:
-    std::weak_ptr<Node> node_;
-    std::string topic_;
+    std::weak_ptr<Node> node;
+    std::string topic;
 };
 
 }  // namespace bolero

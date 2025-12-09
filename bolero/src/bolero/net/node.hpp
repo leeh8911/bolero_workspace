@@ -33,58 +33,55 @@ class Node : public std::enable_shared_from_this<Node> {
 
     ~Node();
 
-    void start();
-    void stop();
+    void Start();
+    void Stop();
 
-    std::shared_ptr<Publisher> create_publisher(const std::string& topic);
-    std::shared_ptr<Subscriber> create_subscriber(const std::string& topic, MessageCallback callback);
-
-    // 문자열 편의 함수
-    void publish_string(const std::string& topic, const std::string& text);
+    std::shared_ptr<Publisher> CreatePublisher(const std::string& topic);
+    std::shared_ptr<Subscriber> CreateSubscriber(const std::string& topic, MessageCallback callback);
 
    private:
     friend class Publisher;
     friend class Subscriber;
 
     // Publisher 가 실제 publish 할 때 호출
-    void publish_raw(const std::string& topic, const MessagePayload& payload);
+    void PublishRaw(const std::string& topic, const MessagePayload& payload);
 
     // Discovery / DataTransport 콜백
-    void handle_discovery_event(const DiscoveryEvent& evt);
-    void handle_data_message(const TopicMessage& msg);
+    void HandleDiscoveryEvent(const DiscoveryEvent& evt);
+    void HandleDataMessage(const TopicMessage& msg);
 
     // 내부 도움 함수
-    void announce_pub(const std::string& topic);
-    void announce_sub(const std::string& topic);
+    void AnnouncePublish(const std::string& topic);
+    void AnnounceSubscribe(const std::string& topic);
 
-    std::string generate_node_id(const std::string& name) const;
+    std::string GenerateNodeId(const std::string& name) const;
 
    private:
-    std::string node_name_;
-    std::string node_id_;
+    std::string node_name;
+    std::string node_id;
 
-    asio::io_context io_;
-    std::thread io_thread_;
+    asio::io_context io_context;
+    std::thread io_thread;
 
-    std::shared_ptr<DataTransport> data_transport_;
-    std::shared_ptr<DiscoveryManager> discovery_;
+    std::shared_ptr<DataTransport> data_transport;
+    std::shared_ptr<DiscoveryManager> discovery;
 
-    std::atomic<bool> running_{false};
+    std::atomic<bool> running{false};
 
     // 동시성 보호용 mutex
-    mutable std::mutex mutex_;
+    mutable std::mutex mutex;
 
     // topic -> subscriber callbacks
-    std::unordered_map<std::string, std::vector<MessageCallback>> local_subscribers_;
+    std::unordered_map<std::string, std::vector<MessageCallback>> local_subscribers;
 
     // topic -> remote subscribers (endpoint list)
-    std::unordered_map<std::string, std::vector<RemoteEndpoint>> remote_subscribers_;
+    std::unordered_map<std::string, std::vector<RemoteEndpoint>> remote_subscribers;
 
     // 내가 publisher 로 등록한 topic 목록
-    std::unordered_set<std::string> local_published_topics_;
+    std::unordered_set<std::string> local_published_topics;
 
     // 내가 subscriber 로 등록한 topic 목록 (디버깅/확장용)
-    std::unordered_set<std::string> local_subscribed_topics_;
+    std::unordered_set<std::string> local_subscribed_topics;
 };
 
 using NodePtr = std::shared_ptr<Node>;

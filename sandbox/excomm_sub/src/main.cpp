@@ -14,14 +14,12 @@ class ExcommSubModule : public bolero::Module {
     using bolero::Module::Module;  // 생성자 상속
     ExcommSubModule(const bolero::Config& config) : bolero::Module(config) {
         BOLERO_LOG_INFO("ExcommSubModule initialized with config: {}", to_string(config));
-    }
-
-    void Run() override {
-        BOLERO_LOG_INFO("ExcommSubModule is running!");
 
         this->CreateSubscriber<size_t>(
             "test/name", [](const size_t& msg) { BOLERO_LOG_INFO("Received message: {}", msg); });
     }
+
+    void Run() override { BOLERO_LOG_INFO("ExcommSubModule is running!"); }
 };
 REGIST_CLASS(MODULE_FACTORY, ExcommSubModule);
 

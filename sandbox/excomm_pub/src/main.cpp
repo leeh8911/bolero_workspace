@@ -28,7 +28,7 @@ class ExcommPubModule : public bolero::Module {
         scheduler.AddPeriodicTask("print_hello", std::chrono::milliseconds(config["period_ms"]), [pub]() {
             size_t value = std::time(nullptr);
             BOLERO_LOG_INFO("Publishing message: {}", value);
-            pub->publish<size_t>(std::time(nullptr));
+            pub->Publish<size_t>(std::time(nullptr));
         });
     }
 };
