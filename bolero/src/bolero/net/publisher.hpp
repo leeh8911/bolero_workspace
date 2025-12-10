@@ -20,7 +20,9 @@ class Publisher {
 
     template <typename T>
     void Publish(const T& message) {
-        // Serialize T to MessagePayload
+        static_assert(std::is_trivially_copyable_v<T>,
+                      "Publish(T): T must be trivially copyable. "
+                      "For complex types, provide custom serialization.");
         MessagePayload payload(sizeof(T));
         memcpy(payload.data(), &message, sizeof(T));
         Publish(payload);

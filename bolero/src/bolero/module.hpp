@@ -35,6 +35,8 @@ class Module {
                                      [callback](const std::string& topic, const MessagePayload& payload) {
                                          // Deserialize payload to T
                                          T message;
+                                         // BOLERO_LOG_TRACE("Subscriber thread id: {}",
+                                         // std::this_thread::get_id());
                                          // 여기서는 간단히 memcpy로 가정 (실제 구현에서는 proper
                                          // serialization 필요)
                                          if (payload.size() == sizeof(T)) {

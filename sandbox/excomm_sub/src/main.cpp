@@ -9,6 +9,24 @@
 #include "bolero/logger.hpp"
 #include "bolero/module.hpp"
 
+struct MyData {
+    size_t value;
+    std::array<uint8_t, 10> extra{};
+};
+
+std::string to_string(const MyData& data) {
+    std::string s = "{";
+    for (const auto& byte : data.extra) {
+        s += fmt::format("{:02X}, ", byte);
+    }
+    if (!data.extra.empty()) {
+        s.erase(s.size() - 2);
+    }
+    s += "}";
+
+    return fmt::format("MyData{{ value: {}, extra_size: {} }}", data.value, s);
+}
+
 class ExcommSubModule : public bolero::Module {
    public:
     using bolero::Module::Module;  // 생성자 상속
@@ -16,7 +34,11 @@ class ExcommSubModule : public bolero::Module {
         BOLERO_LOG_INFO("ExcommSubModule initialized with config: {}", to_string(config));
 
         this->CreateSubscriber<size_t>(
-            "test/name", [](const size_t& msg) { BOLERO_LOG_INFO("Received message: {}", msg); });
+            "test/int", [](const size_t& msg) { BOLERO_LOG_INFO("Received message[int]: {}", msg); });
+
+        this->CreateSubscriber<MyData>("test/struct", [](const MyData& msg) {
+            BOLERO_LOG_INFO("Received message[struct]: {}", to_string(msg));
+        });
     }
 
     void Run() override { BOLERO_LOG_INFO("ExcommSubModule is running!"); }
@@ -29,7 +51,6 @@ int main(int argc, char* argv[]) {
     auto args = parser.Parse();
 
     auto config = bolero::Config::FromFile("sandbox/excomm_sub/config/config.json");
-    std::cout << "Config file: " << config << std::endl;
 
     auto module_ptr = MAKE_CLASS(MODULE_FACTORY, config);
 

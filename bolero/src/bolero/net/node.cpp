@@ -150,15 +150,16 @@ void Node::HandleDiscoveryEvent(const DiscoveryEvent& evt) {
         if (i_am_subscriber) {
             BOLERO_LOG_TRACE("Node::HandleDiscoveryEvent PUB_ANNOUNCE topic='{}' from node_id='{}'",
                              evt.topic, evt.node_id);
-            // 현재 구조에서는 publisher endpoint를 굳이 저장하지 않아도 됨.
-            // 필요하면 remote_publishers_ 구조를 추가 가능.
+
+            // 새 Publisher가 등장했으니, 내 SUB를 다시 알린다.
+            // 멀티캐스트로 SUB_ANNOUNCE를 재송신.
+            AnnounceSubscribe(evt.topic);
         }
     }
 }
 
 // 데이터 메시지 처리
 void Node::HandleDataMessage(const TopicMessage& msg) {
-    BOLERO_LOG_TRACE("Node::HandleDataMessage topic='{}' payload_size={}", msg.topic, msg.payload.size());
     std::vector<MessageCallback> callbacks;
     {
         std::lock_guard<std::mutex> lock(mutex);
@@ -200,8 +201,11 @@ void Node::AnnounceSubscribe(const std::string& topic) {
 
 std::string Node::GenerateNodeId(const std::string& name) const {
     // 간단한 UUID 대용 (실제 구현에서는 진짜 UUID 라이브러리 사용 권장)
-    auto now = std::chrono::steady_clock::now().time_since_epoch().count();
-    return name + "-" + std::to_string(now);
+
+    size_t millis = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::system_clock::now().time_since_epoch())
+                        .count();
+    return name + "-" + std::to_string(millis);
 }
 
 // -------- Publisher / Subscriber 구현 --------

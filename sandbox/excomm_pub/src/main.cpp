@@ -9,6 +9,21 @@
 #include "bolero/logger.hpp"
 #include "bolero/module.hpp"
 
+struct MyData {
+    size_t value;
+    std::array<uint8_t, 10> extra{};
+};
+std::string to_string(const MyData& data) {
+    std::string s = "{";
+    for (const auto& byte : data.extra) {
+        s += fmt::format("{:02X}, ", byte);
+    }
+    s.erase(s.size() - 2);  // 마지막 ", " 제거
+    s += "}";
+
+    return fmt::format("MyData{{ value: {}, extra_size: {} }}", data.value, s);
+}
+
 class ExcommPubModule : public bolero::Module {
    public:
     using bolero::Module::Module;  // 생성자 상속
@@ -19,16 +34,26 @@ class ExcommPubModule : public bolero::Module {
     void Run() override {
         BOLERO_LOG_INFO("ExcommPubModule is running!");
 
-        const auto& config = this->GetConfig();
         auto& scheduler = this->GetScheduler();
 
-        auto pub = this->CreatePublisher("test/name");
+        std::unordered_map<std::string, std::shared_ptr<bolero::Publisher>> pubs{};
 
-        // 1초마다 메시지를 출력하는 주기 Task 등록
-        scheduler.AddPeriodicTask("print_hello", std::chrono::milliseconds(config["period_ms"]), [pub]() {
+        pubs.emplace("int", this->CreatePublisher("test/int"));
+        scheduler.AddPeriodicTask("int_pub", std::chrono::milliseconds(1000), [pub = pubs["int"]]() {
             size_t value = std::time(nullptr);
-            BOLERO_LOG_INFO("Publishing message: {}", value);
+            BOLERO_LOG_INFO("Publishing message[int]: {}", value);
             pub->Publish<size_t>(std::time(nullptr));
+        });
+
+        pubs.emplace("struct", this->CreatePublisher("test/struct"));
+        scheduler.AddPeriodicTask("struct_pub", std::chrono::milliseconds(500), [pub = pubs["struct"]]() {
+            MyData data;
+            for (size_t iter = 0; iter < data.extra.size(); ++iter) {
+                data.extra[iter] = std::rand() % 256;
+            }
+
+            BOLERO_LOG_INFO("Publishing message[struct]: {}", to_string(data));
+            pub->Publish<MyData>(data);
         });
     }
 };
