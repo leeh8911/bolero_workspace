@@ -4,7 +4,7 @@
 #include <chrono>
 #include <thread>
 
-#include "bolero/net/data_transport.hpp"  // 실제 경로에 맞게 수정
+#include "bolero/dds/data_transport.hpp"  // 실제 경로에 맞게 수정
 
 #include <asio.hpp>
 

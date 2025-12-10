@@ -1,6 +1,6 @@
-#include "bolero/net/publisher.hpp"
+#include "bolero/dds/publisher.hpp"
 
-#include "bolero/net/node.hpp"
+#include "bolero/dds/node.hpp"
 
 namespace bolero {
 

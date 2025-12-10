@@ -41,7 +41,9 @@ class ExcommPubModule : public bolero::Module {
         pubs.emplace("int", this->CreatePublisher("test/int"));
         scheduler.AddPeriodicTask("int_pub", std::chrono::milliseconds(1000), [pub = pubs["int"]]() {
             size_t value = std::time(nullptr);
-            BOLERO_LOG_INFO("Publishing message[int]: {}", value);
+            std::stringstream ss;
+            ss << std::this_thread::get_id();
+            BOLERO_LOG_INFO("{} - Send [{}]: {}", ss.str(), "test/int", value);
             pub->Publish<size_t>(std::time(nullptr));
         });
 
@@ -52,7 +54,9 @@ class ExcommPubModule : public bolero::Module {
                 data.extra[iter] = std::rand() % 256;
             }
 
-            BOLERO_LOG_INFO("Publishing message[struct]: {}", to_string(data));
+            std::stringstream ss;
+            ss << std::this_thread::get_id();
+            BOLERO_LOG_INFO("{} - Send [{}]: {}", ss.str(), "test/struct", to_string(data));
             pub->Publish<MyData>(data);
         });
     }

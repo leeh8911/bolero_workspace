@@ -1,7 +1,7 @@
 #include "bolero/module.hpp"
 
 #include "bolero/config.hpp"
-#include "bolero/net/node.hpp"
+#include "bolero/dds/node.hpp"
 #include "bolero/scheduler.hpp"
 #include "bolero/task.hpp"
 

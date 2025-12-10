@@ -1,4 +1,4 @@
-#include "bolero/net/discovery_event.hpp"
+#include "bolero/dds/discovery_event.hpp"
 
 #include "nlohmann/json.hpp"
 

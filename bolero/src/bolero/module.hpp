@@ -4,7 +4,7 @@
 
 #include "bolero/class_factory.hpp"
 #include "bolero/config.hpp"
-#include "bolero/net/node.hpp"
+#include "bolero/dds/node.hpp"
 #include "bolero/scheduler.hpp"
 
 namespace bolero {

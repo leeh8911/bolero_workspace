@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <thread>
 
@@ -33,11 +34,16 @@ class ExcommSubModule : public bolero::Module {
     ExcommSubModule(const bolero::Config& config) : bolero::Module(config) {
         BOLERO_LOG_INFO("ExcommSubModule initialized with config: {}", to_string(config));
 
-        this->CreateSubscriber<size_t>(
-            "test/int", [](const size_t& msg) { BOLERO_LOG_INFO("Received message[int]: {}", msg); });
+        this->CreateSubscriber<size_t>("test/int", [](const size_t& msg) {
+            std::stringstream ss;
+            ss << std::this_thread::get_id();
+            BOLERO_LOG_INFO("{} - Received [{}]: {}", ss.str(), "test/int", msg);
+        });
 
         this->CreateSubscriber<MyData>("test/struct", [](const MyData& msg) {
-            BOLERO_LOG_INFO("Received message[struct]: {}", to_string(msg));
+            std::stringstream ss;
+            ss << std::this_thread::get_id();
+            BOLERO_LOG_INFO("{} - Received [{}]: {}", ss.str(), "test/struct", to_string(msg));
         });
     }
 

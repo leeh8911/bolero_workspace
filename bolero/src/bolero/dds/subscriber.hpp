@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "bolero/net/subscriber.hpp"
+#include "bolero/dds/subscriber.hpp"
 
 namespace bolero {
 

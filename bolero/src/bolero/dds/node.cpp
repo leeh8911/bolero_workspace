@@ -1,13 +1,13 @@
-#include "bolero/net/node.hpp"
+#include "bolero/dds/node.hpp"
 
 #include <chrono>
 #include <iostream>
 
+#include "bolero/dds/data_transport.hpp"
+#include "bolero/dds/discovery_manager.hpp"
+#include "bolero/dds/publisher.hpp"
+#include "bolero/dds/subscriber.hpp"
 #include "bolero/logger.hpp"
-#include "bolero/net/data_transport.hpp"
-#include "bolero/net/discovery_manager.hpp"
-#include "bolero/net/publisher.hpp"
-#include "bolero/net/subscriber.hpp"
 
 namespace bolero {
 

@@ -9,11 +9,11 @@
 #include <unordered_set>
 #include <vector>
 
-#include "bolero/net/data_transport.hpp"
-#include "bolero/net/discovery_manager.hpp"
-#include "bolero/net/message_payload.hpp"
-#include "bolero/net/publisher.hpp"
-#include "bolero/net/subscriber.hpp"
+#include "bolero/dds/data_transport.hpp"
+#include "bolero/dds/discovery_manager.hpp"
+#include "bolero/dds/message_payload.hpp"
+#include "bolero/dds/publisher.hpp"
+#include "bolero/dds/subscriber.hpp"
 
 #include <asio.hpp>
 

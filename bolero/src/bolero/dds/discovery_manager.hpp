@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "bolero/dds/discovery_event.hpp"
 #include "bolero/logger.hpp"
-#include "bolero/net/discovery_event.hpp"
 
 #include <asio.hpp>
 namespace bolero {

@@ -3,8 +3,8 @@
 #include <memory>
 #include <string>
 
-#include "bolero/net/message_payload.hpp"
-#include "bolero/net/subscriber.hpp"
+#include "bolero/dds/message_payload.hpp"
+#include "bolero/dds/subscriber.hpp"
 
 namespace bolero {
 
