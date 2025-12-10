@@ -1,9 +1,22 @@
 genrule(
     name = "doxygen_html",
     srcs = [
-        "//:Doxyfile",           # 루트의 Doxyfile
-        "//bolero:doxygen_srcs", # bolero/BUILD.bazel 에서 정의한 filegroup
+        "//:Doxyfile",
+        "//bolero:doxygen_srcs",
     ],
-    outs = ["html_stamp"],
-    cmd = "doxygen $(location //:Doxyfile) && echo done > $@",
+    # Bazel이 관리하는 출력 디렉터리 이름
+    outs = ["html"],
+    cmd = """
+        set -e
+
+        # $@ == bazel-out/.../docs/html
+        rm -rf "$@"
+        mkdir -p "$@"
+
+        # Doxyfile 사용해서 문서 생성
+        doxygen $(location //:Doxyfile)
+
+        # Doxygen이 만든 docs_out/html/* 을 Bazel 출력 디렉터리로 복사
+        cp -r docs_out/html/* "$@"
+    """,
 )

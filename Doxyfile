@@ -1,59 +1,106 @@
-# 프로젝트 이름
-PROJECT_NAME           = "Bolero"
+#---------------------------------
+# Project 설정
+#---------------------------------
 
-# 출력 위치
+PROJECT_NAME           = "Bolero"
 OUTPUT_DIRECTORY       = docs_out
 
-# 문서 종류
-GENERATE_HTML          = YES
-GENERATE_LATEX         = NO
+#---------------------------------
+# 입력 소스 & 탐색 범위
+#---------------------------------
 
-# 소스 코드 재귀 탐색
+# Bolero 코드가 실제로 있는 경로 기준으로 맞춰줘야 함
+INPUT                  = bolero/src
+FILE_PATTERNS          = *.hpp \
+                         *.h \
+                         *.cpp
+
 RECURSIVE              = YES
 
-# 문서화되지 않은 것까지 포함할지
+#---------------------------------
+# 출력 형식
+#---------------------------------
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+
+GENERATE_LATEX         = NO
+
+#---------------------------------
+# 추출 범위 (얼마나 많이 문서화할지)
+#---------------------------------
+
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = YES
 EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+EXTRACT_LOCAL_METHODS  = YES
+EXTRACT_ANON_NSPACES   = YES
 
-# ---------------------------------
-# UML 스타일 클래스/관계 다이어그램 설정
-# ---------------------------------
+# 문서화 안 된 것들도 관계에 포함시키기
+HIDE_UNDOC_RELATIONS   = NO
 
-# Graphviz(dot) 사용 여부
+# 표준 라이브러리 타입도 예쁘게
+BUILTIN_STL_SUPPORT    = YES
+
+#---------------------------------
+# 소스 브라우저
+#---------------------------------
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+#---------------------------------
+# Graphviz / UML 다이어그램
+#---------------------------------
+
 HAVE_DOT               = YES
-
-# 클래스 다이어그램 생성 (상속/구성 관계)
-CLASS_DIAGRAMS         = YES
-
-# 협업(콜라보레이션) 그래프 (멤버로 포함된 타입 관계)
-COLLABORATION_GRAPH    = YES
-
-# 전체 상속 계층 구조를 트리로 보여줄지
-GRAPHICAL_HIERARCHY    = YES
-
-# 디렉터리 구조 그래프
-DIRECTORY_GRAPH        = YES
-
-# UML 스타일로 그릴지 여부 (상자/화살표 형태)
-UML_LOOK               = YES
-
-# 너무 큰 그래프는 자르기 위한 노드 수 제한
-DOT_GRAPH_MAX_NODES    = 50
-
-# 그래프 이미지 포맷 (SVG 추천 – 확대/검색 편함)
 DOT_IMAGE_FORMAT       = svg
-
-# HTML에서 SVG를 인터랙티브하게
 INTERACTIVE_SVG        = YES
 
+# 클래스 상속/구성 다이어그램
+CLASS_DIAGRAMS         = YES
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+GRAPHICAL_HIERARCHY    = YES
+DIRECTORY_GRAPH        = YES
+
+UML_LOOK               = YES
+TEMPLATE_RELATIONS     = YES
+
+# include 의존성 그래프 (원하면 켜기)
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+#---------------------------------
+# 그래프 깊이 / 크기 조절
+#---------------------------------
+
+# 그래프 하나에 포함될 최대 노드 수
+# 0 = 제한 없음인데, 너무 커지면 보기 힘드니 적당히 타협
+DOT_GRAPH_MAX_NODES    = 150
+
+# 루트에서 몇 step까지 따라갈지 (0 = 제한 없음)
+# 깊은 관계 보고 싶으면 0, 다만 너무 깊으면 그래프가 난장판 됨
+MAX_DOT_GRAPH_DEPTH    = 0
+
+# 너무 복잡한 그래프는 클러스터링해서 표시 (true면 조금 더 정돈됨)
+DOT_CLEANUP            = YES
+
+#---------------------------------
 # 함수 호출/호출자 그래프
+#---------------------------------
+
 CALL_GRAPH             = YES
 CALLER_GRAPH           = YES
 
-# 템플릿 관계도 표시
-TEMPLATE_RELATIONS     = YES
+#---------------------------------
+# 정리용 기타 설정 (취향)
+#---------------------------------
 
-# 문서에 코드 같이 보여줄지
-SOURCE_BROWSER         = YES
-INLINE_SOURCES         = YES
+# 정렬, 이름 처리 등
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = YES
+FULL_SIDEBAR           = YES

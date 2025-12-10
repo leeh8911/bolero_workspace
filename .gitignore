@@ -3,5 +3,7 @@ bazel-*/
 
 *.lock
 *.log
+*.dot
+*.png
 
 .vscode/

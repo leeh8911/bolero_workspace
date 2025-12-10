@@ -89,22 +89,33 @@ std::shared_ptr<Subscriber> Node::CreateSubscriber(const std::string& topic, Mes
 }
 
 void Node::PublishRaw(const std::string& topic, const MessagePayload& payload) {
-    std::vector<RemoteEndpoint> subscribers_copy;
+    // 1) 같은 Node 안의 local subscribers 먼저 직접 호출
+    std::vector<MessageCallback> local_cbs;
+    std::vector<RemoteEndpoint> remote_eps;
+
     {
         std::lock_guard<std::mutex> lock(mutex);
-        auto it = remote_subscribers.find(topic);
-        if (it != remote_subscribers.end()) {
-            subscribers_copy = it->second;
+
+        // local subscribers
+        auto it = local_subscribers.find(topic);
+        if (it != local_subscribers.end()) {
+            local_cbs = it->second;  // copy
+        }
+
+        // remote subscribers
+        auto it2 = remote_subscribers.find(topic);
+        if (it2 != remote_subscribers.end()) {
+            remote_eps = it2->second;  // copy
         }
     }
 
-    if (subscribers_copy.empty()) {
-        // 아직 subscriber를 찾지 못한 경우일 수도 있음
-        // 필요시 여기서 디버그 로그
-        return;
+    // 인메모리 전달: 같은 Node 안 subscriber
+    for (auto& cb : local_cbs) {
+        cb(topic, payload);
     }
 
-    for (const auto& ep : subscribers_copy) {
+    // UDP 전달: 다른 Node(원격)에게
+    for (const auto& ep : remote_eps) {
         data_transport->SendTo(ep.ip, ep.port, topic, payload);
     }
 }
